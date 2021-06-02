@@ -2,9 +2,10 @@ import { useSelector } from "react-redux";
 import { nanoid } from "@reduxjs/toolkit";
 import { ReactionButtons } from "./../../ReactionButtons";
 import React from "react";
+import { getAllPosts } from "./postSlice";
 
 export function Posts() {
-  const posts = useSelector((state) => state.posts);
+  const posts = useSelector(getAllPosts);
 
   const postItems = (
     <ul>
