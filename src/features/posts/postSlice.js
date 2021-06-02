@@ -48,6 +48,8 @@ export const postSlice = createSlice({
   },
 });
 
+export const getPostById = (state, postId) =>
+  state.posts.find((post) => post.id === postId);
 export const getAllPosts = (state) => state.posts;
 export const getPostByTitle = (state, title) =>
   state.posts.find((post) => post.title === title);
