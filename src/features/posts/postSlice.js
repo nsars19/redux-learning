@@ -1,32 +1,29 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
+
+export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
+  const res = await fetch("https://frozen-thicket-71687.herokuapp.com/posts");
+  const data = await res.json();
+  return data;
+});
 
 export const postSlice = createSlice({
   name: "posts",
-  initialState: [
-    {
-      id: nanoid(),
-      title: "Hello",
-      content: "World",
-      reactions: {
-        thumbsUp: 0,
-        hooray: 0,
-        heart: 0,
-        rocket: 0,
-        eyes: 0,
-      },
-    },
-  ],
+  initialState: {
+    posts: [],
+    status: "idle",
+    error: null,
+  },
   reducers: {
     reactionAdded(state, action) {
       const { postId, reaction } = action.payload;
-      const existingPost = state.find((post) => post.id === postId);
+      const existingPost = state.posts.find((post) => post.id === postId);
       if (existingPost) {
         existingPost.reactions[reaction]++;
       }
     },
     addPost: {
       reducer(state, action) {
-        state.push(action.payload);
+        state.posts.push(action.payload);
       },
       prepare(title, content) {
         return {
@@ -46,11 +43,24 @@ export const postSlice = createSlice({
       },
     },
   },
+  extraReducers: {
+    [fetchPosts.pending]: (state, action) => {
+      state.status = "loading";
+    },
+    [fetchPosts.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      state.posts = state.posts.concat(action.payload);
+    },
+    [fetchPosts.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    },
+  },
 });
 
 export const getPostById = (state, postId) =>
-  state.posts.find((post) => post.id === postId);
-export const getAllPosts = (state) => state.posts;
+  state.posts.posts.find((post) => post.id === postId);
+export const getAllPosts = (state) => state.posts.posts;
 export const getPostByTitle = (state, title) =>
   state.posts.find((post) => post.title === title);
 
