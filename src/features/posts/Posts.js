@@ -19,10 +19,10 @@ export function Posts() {
   const postItems = (
     <ul>
       {posts.map((post) => (
-        <li key={nanoid()}>
+        <li key={post._id}>
           <h2>{post.title}</h2>
           <p>{post.text}</p>
-          {/* <ReactionButtons post={post} /> */}
+          <ReactionButtons post={post} />
         </li>
       ))}
     </ul>

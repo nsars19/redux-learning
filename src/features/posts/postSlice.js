@@ -16,7 +16,7 @@ export const postSlice = createSlice({
   reducers: {
     reactionAdded(state, action) {
       const { postId, reaction } = action.payload;
-      const existingPost = state.posts.find((post) => post.id === postId);
+      const existingPost = state.posts.find((post) => post._id === postId);
       if (existingPost) {
         existingPost.reactions[reaction]++;
       }
@@ -49,7 +49,18 @@ export const postSlice = createSlice({
     },
     [fetchPosts.fulfilled]: (state, action) => {
       state.status = "succeeded";
-      state.posts = state.posts.concat(action.payload);
+      const newPosts = action.payload.map((post) => ({
+        ...post,
+        reactions: {
+          thumbsUp: 0,
+          hooray: 0,
+          heart: 0,
+          rocket: 0,
+          eyes: 0,
+        },
+      }));
+
+      state.posts = state.posts.concat(newPosts);
     },
     [fetchPosts.rejected]: (state, action) => {
       state.status = "failed";
